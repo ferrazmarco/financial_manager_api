@@ -14,9 +14,8 @@ class UserController extends AbstractController
     #[Route('/users', name: 'app_user', methods:['GET'])]
     public function index(UserRepository $userRepository): JsonResponse
     {
-        $users = $userRepository->findAll();
         return $this->json([
-            'data' => $users
+            'data' => $userRepository->findAll()
         ]);
     }
 }
