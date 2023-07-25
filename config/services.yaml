@@ -6,6 +6,9 @@
 parameters:
 
 services:
+    App\Entity\User:
+        arguments:
+            $passwordHasher: '@security.user_password_hasher'
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
