@@ -8,8 +8,10 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
+#[UniqueEntity('username', message: 'This username is already used.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     private UserPasswordHasherInterface $passwordHasher;
@@ -100,7 +102,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             $password
         );
 
-        $this->password = $hashedPassword;
+        $this->password = $password;
 
         return $this;
     }

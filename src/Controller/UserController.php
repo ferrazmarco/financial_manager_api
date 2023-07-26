@@ -7,10 +7,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-
+use App\Form\EditUserType;
 
 #[Route("/api", name: "api_")]
-class UserController extends AbstractController
+class UserController extends AbstractApiController
 {
     #[Route('/users', name: 'app_user', methods: ['GET'])]
     public function index(UserRepository $userRepository): JsonResponse
@@ -36,13 +36,20 @@ class UserController extends AbstractController
     {
         $user = $userRepository->find($id);
         if (!$user) throw $this->createNotFoundException();
+        $form = $this->createForm(EditUserType::class, $user);
+        $this->processForm($request, $form);
 
-        $decoded = json_decode($request->getContent());
-        $user->setRoles($decoded->roles);
-        $user->setUsername($decoded->username);
-        $user->setPassword($decoded->password);
+        // ESTA APAGANDO OS DADOS QUE EU NAO ENVIO NO FORM
+        // PESQUISAR COMO EVITAR QUE ISSO ACONTECA
+        // dd($form->getData());
+        if (!$form->isValid()) {
+            $errors = $this->getErrorsFromForm($form);
+            return $this->json([
+                'data' => $errors
+            ], 400);
+        };
+
         $userRepository->add($user, true);
-
         return $this->json([
             'message' => 'User updated successfully',
             'data' => $user

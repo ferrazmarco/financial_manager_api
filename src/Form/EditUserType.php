@@ -15,15 +15,15 @@ class EditUserType extends AbstractType
     {
         $builder
             ->add('username', TextType::class)
-            ->add('password', TextType::class)
-            ->add('roles', null, ['empty_data' => []])
-        ;
+            ->add('password', TextType::class, ['required' => false])
+            ->add('roles', null, ['empty_data' => []]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'csrf_protection' => false
         ]);
     }
 }
