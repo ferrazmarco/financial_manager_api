@@ -15,7 +15,7 @@ class EditUserType extends AbstractType
     {
         $builder
             ->add('username', TextType::class)
-            ->add('password', TextType::class, ['required' => false])
+            ->add('password', TextType::class)
             ->add('roles', null, ['empty_data' => []]);
     }
 

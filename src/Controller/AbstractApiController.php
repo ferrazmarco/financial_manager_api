@@ -10,7 +10,7 @@ use Symfony\Component\Form\Form as FormInterface;
 
 class AbstractApiController extends AbstractController
 {
-    public function processForm(Request $request, FormInterface $form, bool $clearMissing = false): void
+    public function processForm(Request $request, FormInterface $form, bool $clearMissing = true): void
     {
         $data = json_decode($request->getContent(), true);
         $form->submit($data, $clearMissing);

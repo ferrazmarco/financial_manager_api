@@ -38,7 +38,7 @@ class UserController extends AbstractApiController
         $user = $userRepository->find($id);
         if (!$user) throw $this->createNotFoundException();
         $form = $this->createForm(EditUserType::class, $user);
-        $this->processForm($request, $form);
+        $this->processForm($request, $form, false);
 
         if (!$form->isValid()) {
             $errors = $this->getErrorsFromForm($form);
