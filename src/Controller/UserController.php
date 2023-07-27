@@ -37,6 +37,7 @@ class UserController extends AbstractApiController
     {
         $user = $userRepository->find($id);
         if (!$user) throw $this->createNotFoundException();
+
         $form = $this->createForm(EditUserType::class, $user);
         $this->processForm($request, $form, false);
 
@@ -55,6 +56,19 @@ class UserController extends AbstractApiController
         return $this->json([
             'message' => 'User updated successfully',
             'data' => $user
+        ]);
+    }
+
+    #[Route('/users/{id}', name: 'app_user_destroy', methods: ['DELETE'])]
+    public function destroy(int $id, UserRepository $userRepository, Request $request): JsonResponse
+    {
+        $user = $userRepository->find($id);
+        if (!$user) throw $this->createNotFoundException();
+
+        $userRepository->remove($user, true);
+
+        return $this->json([
+            'message' => 'User destroyed successfully'
         ]);
     }
 }
