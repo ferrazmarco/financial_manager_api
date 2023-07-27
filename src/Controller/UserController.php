@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Form\EditUserType;
 
 #[Route("/api", name: "api_")]
@@ -32,16 +33,13 @@ class UserController extends AbstractApiController
     }
 
     #[Route('/users/{id}', name: 'app_user_update', methods: ['PATCH', 'PUT'])]
-    public function update(int $id, UserRepository $userRepository, Request $request): JsonResponse
+    public function update(int $id, UserRepository $userRepository, Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
         $user = $userRepository->find($id);
         if (!$user) throw $this->createNotFoundException();
         $form = $this->createForm(EditUserType::class, $user);
         $this->processForm($request, $form);
 
-        // ESTA APAGANDO OS DADOS QUE EU NAO ENVIO NO FORM
-        // PESQUISAR COMO EVITAR QUE ISSO ACONTECA
-        // dd($form->getData());
         if (!$form->isValid()) {
             $errors = $this->getErrorsFromForm($form);
             return $this->json([
@@ -49,7 +47,11 @@ class UserController extends AbstractApiController
             ], 400);
         };
 
+        $plainPassword = $form->getData()->getPassword();
+        $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
+        $form->getData()->setPassword($hashedPassword);
         $userRepository->add($user, true);
+
         return $this->json([
             'message' => 'User updated successfully',
             'data' => $user

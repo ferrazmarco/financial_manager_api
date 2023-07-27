@@ -10,10 +10,10 @@ use Symfony\Component\Form\Form as FormInterface;
 
 class AbstractApiController extends AbstractController
 {
-    public function processForm(Request $request, FormInterface $form): void
+    public function processForm(Request $request, FormInterface $form, bool $clearMissing = false): void
     {
         $data = json_decode($request->getContent(), true);
-        $form->submit($data);
+        $form->submit($data, $clearMissing);
 
         # TODO: verificar uma forma de ja validar o formulario
         # e retornar o erro aqui nessa funcao mesmo

@@ -6,17 +6,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-use App\Entity\User;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Form\CreateUserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\User;
 
 #[Route("/api", name: "api_")]
 class RegistrationController extends AbstractApiController
 {   
     #[Route('/registration', name: 'app_registration', methods: ["POST"])]
-    public function index(UserRepository $userRepository, Request $request, User $user, ValidatorInterface $validator): JsonResponse
+    public function index(UserRepository $userRepository, Request $request, User $user, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {   
         $form = $this->createForm(CreateUserType::class, $user);
         $this->processForm($request, $form);
@@ -27,8 +27,12 @@ class RegistrationController extends AbstractApiController
                 'data' => $errors
             ], 400);
         };
-
+        
+        $plainPassword = $form->getData()->getPassword();
+        $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
+        $form->getData()->setPassword($hashedPassword);
         $userRepository->add($user, true);
+        
         return $this->json([
             'message' => 'Registered Successfully',
             'data' => $user
