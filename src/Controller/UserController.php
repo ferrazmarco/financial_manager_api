@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Form\EditUserType;
+use App\Security\Voter\UserVoter;
+use App\Entity\User;
 
 #[Route("/api", name: "api_")]
 class UserController extends AbstractApiController
@@ -23,9 +25,8 @@ class UserController extends AbstractApiController
 
     #[Route('/users/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(int $id, UserRepository $userRepository): JsonResponse
-    {
-        $user = $userRepository->find($id);
-        if (!$user) throw $this->createNotFoundException();
+    {   
+        $user = $this->findAndGrantAcces($id, $userRepository, UserVoter::SHOW);
 
         return $this->json([
             'data' => $user
@@ -35,9 +36,7 @@ class UserController extends AbstractApiController
     #[Route('/users/{id}', name: 'app_user_update', methods: ['PATCH', 'PUT'])]
     public function update(int $id, UserRepository $userRepository, Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {
-        $user = $userRepository->find($id);
-        if (!$user) throw $this->createNotFoundException();
-
+        $user = $this->findAndGrantAcces($id, $userRepository, UserVoter::EDIT);
         $form = $this->createForm(EditUserType::class, $user);
         $this->processForm($request, $form, false);
 
@@ -48,9 +47,12 @@ class UserController extends AbstractApiController
             ], 400);
         };
 
-        $plainPassword = $form->getData()->getPassword();
-        $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
-        $form->getData()->setPassword($hashedPassword);
+        if ($request->getPayload()->has('password')) {
+            $plainPassword = $form->getData()->getPassword();
+            $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
+            $form->getData()->setPassword($hashedPassword);
+        }
+
         $userRepository->add($user, true);
 
         return $this->json([
@@ -62,13 +64,21 @@ class UserController extends AbstractApiController
     #[Route('/users/{id}', name: 'app_user_destroy', methods: ['DELETE'])]
     public function destroy(int $id, UserRepository $userRepository, Request $request): JsonResponse
     {
-        $user = $userRepository->find($id);
-        if (!$user) throw $this->createNotFoundException();
-
+        $user = $this->findAndGrantAcces($id, $userRepository, UserVoter::DESTROY);
         $userRepository->remove($user, true);
 
         return $this->json([
             'message' => 'User destroyed successfully'
         ]);
+    }
+
+    private function findAndGrantAcces(int $id, UserRepository $userRepository, string $ability): User
+    {   
+
+        $user = $userRepository->find($id);
+        if (!$user) throw $this->createNotFoundException();
+        $this->denyAccessUnlessGranted($ability, $user);
+
+        return $user;
     }
 }
