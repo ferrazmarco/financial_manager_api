@@ -38,23 +38,23 @@ class UserVoter extends Voter
         };
     }
 
-    private function canView(User $user, User $currentUser): bool
+    private function canView(?User $subject, User $currentUser): bool
     {   
         return $currentUser->isAdmin();
     }
 
-    private function canShow(User $user, User $currentUser): bool
+    private function canShow(User $subject, User $currentUser): bool
     {   
-        return ($currentUser === $user || $currentUser->isAdmin());
+        return ($currentUser === $subject || $currentUser->isAdmin());
     }
 
-    private function canEdit(User $user, User $currentUser): bool
+    private function canEdit(User $subject, User $currentUser): bool
     {
-        return ($currentUser === $user || $currentUser->isAdmin());
+        return ($currentUser === $subject || $currentUser->isAdmin());
     }
 
-    private function canDestroy(User $user, User $currentUser): bool
+    private function canDestroy(User $subject, User $currentUser): bool
     {
-        return ($currentUser !== $user || $currentUser->isAdmin());
+        return ($currentUser !== $subject || $currentUser->isAdmin());
     }
 }

@@ -16,8 +16,9 @@ use App\Entity\User;
 class RegistrationController extends AbstractApiController
 {   
     #[Route('/registration', name: 'app_registration', methods: ["POST"])]
-    public function index(UserRepository $userRepository, Request $request, User $user, UserPasswordHasherInterface $passwordHasher): JsonResponse
+    public function index(UserRepository $userRepository, Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {   
+        $user = new User;
         $form = $this->createForm(CreateUserType::class, $user);
         $this->processForm($request, $form);
 
