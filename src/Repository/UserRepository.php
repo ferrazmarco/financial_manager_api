@@ -3,12 +3,12 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use App\Service\ServiceException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
-
 /**
  * @extends ServiceEntityRepository<User>
  *
@@ -56,6 +56,14 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+    }
+
+    public function findOrFail(int $id): User
+    {
+        $user = $this->find($id);
+        if (!$user) throw new ServiceException(404, 'User Not Found');
+
+        return $user;
     }
 
 //    /**

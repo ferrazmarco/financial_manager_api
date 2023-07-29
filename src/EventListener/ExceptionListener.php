@@ -13,7 +13,7 @@ class ExceptionListener
     public function onKernelException(ExceptionEvent $event): void
     {   
         $exception = $event->getThrowable();
-        $data = ['error' => $exception->getMessage()];
+        $data = $this->sanitizeMessage($exception->getMessage());
         $response = new JsonResponse($data);
         
         if ($exception instanceof HttpExceptionInterface) {
@@ -23,5 +23,12 @@ class ExceptionListener
         }
 
         $event->setResponse($response);
+    }
+
+    private function sanitizeMessage(string $message): array
+    {
+        $decoded = json_decode($message);
+
+        return ['error' => $decoded ?? $message];
     }
 }

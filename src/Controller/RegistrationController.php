@@ -21,13 +21,6 @@ class RegistrationController extends AbstractApiController
         $user = new User;
         $form = $this->createForm(CreateUserType::class, $user);
         $this->processForm($request, $form);
-
-        if (!$form->isValid()) {
-            $errors = $this->getErrorsFromForm($form);
-            return $this->json([
-                'data' => $errors
-            ], 400);
-        };
         
         $plainPassword = $form->getData()->getPassword();
         $hashedPassword = $passwordHasher->hashPassword($user, $plainPassword);
