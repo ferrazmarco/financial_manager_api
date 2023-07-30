@@ -6,8 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Form\Form as FormInterface;
+use App\Service\ServiceException;
 
 class AbstractApiController extends AbstractController
 {
@@ -18,8 +18,7 @@ class AbstractApiController extends AbstractController
 
         if (!$form->isValid()) {
             $errors = json_encode($this->getErrorsFromForm($form));
-            // dd(#errors);
-            throw new UnprocessableEntityHttpException($errors);
+            throw new ServiceException(JsonResponse::HTTP_UNPROCESSABLE_ENTITY, $errors);
         }
     }
 

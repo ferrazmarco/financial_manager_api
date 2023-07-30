@@ -58,14 +58,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
     }
 
-    public function findOrFail(int $id): User
-    {
-        $user = $this->find($id);
-        if (!$user) throw new ServiceException(404, 'User Not Found');
-
-        return $user;
-    }
-
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

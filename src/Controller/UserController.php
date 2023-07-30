@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Form\EditUserType;
 use App\Security\Voter\UserVoter;
 use App\Entity\User;
@@ -19,29 +20,24 @@ class UserController extends AbstractApiController
     public function index(UserRepository $userRepository): JsonResponse
     {
         $this->denyAccessUnlessGranted(UserVoter::VIEW);
-
         return $this->json([
             'data' => $userRepository->findAll()
         ]);
     }
 
     #[Route('/users/{id}', name: 'app_user_show', methods: ['GET'])]
-    public function show(int $id, UserRepository $userRepository): JsonResponse
+    #[IsGranted('show', 'user')]
+    public function show(User $user, UserRepository $userRepository): JsonResponse
     {   
-        $user = $userRepository->findOrFail($id);
-        $this->denyAccessUnlessGranted(UserVoter::SHOW, $user);
-
         return $this->json([
             'data' => $user
         ]);
     }
 
     #[Route('/users/{id}', name: 'app_user_update', methods: ['PATCH', 'PUT'])]
-    public function update(int $id, UserRepository $userRepository, Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
+    #[IsGranted('edit', 'user')]
+    public function update(User $user, UserRepository $userRepository, Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
     {   
-        $user = $userRepository->findOrFail($id);
-        $this->denyAccessUnlessGranted(UserVoter::EDIT, $user);
-
         $form = $this->createForm(EditUserType::class, $user);
         $this->processForm($request, $form, false);
 
@@ -60,11 +56,9 @@ class UserController extends AbstractApiController
     }
 
     #[Route('/users/{id}', name: 'app_user_destroy', methods: ['DELETE'])]
-    public function destroy(int $id, UserRepository $userRepository, Request $request): JsonResponse
+    #[IsGranted('destroy', 'user')]
+    public function destroy(User $user, UserRepository $userRepository, Request $request): JsonResponse
     {
-        $user = $userRepository->findOrFail($id);
-        $this->denyAccessUnlessGranted(UserVoter::DESTROY, $user);
-        
         $userRepository->remove($user, true);
 
         return $this->json([
