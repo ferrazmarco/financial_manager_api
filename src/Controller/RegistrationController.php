@@ -28,7 +28,10 @@ class RegistrationController extends AbstractApiController
         
         return $this->json([
             'message' => 'Registered Successfully',
-            'data' => $user
-        ]);
+            'data' => $user],
+            JsonResponse::HTTP_CREATED,
+            [],
+            ['groups' => 'main']
+        );
     }
 }

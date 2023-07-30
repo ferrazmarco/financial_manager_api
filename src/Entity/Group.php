@@ -8,29 +8,38 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+#[UniqueEntity('description', message: 'This description is already used.')]
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
 class Group
 {
+    #[Groups(['main'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['main'])]
     #[ORM\Column(length: 100)]
     private ?string $description = null;
 
+    #[Groups(['users_details'])]
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'groups')]
     private Collection $users;
 
+    #[Groups(['main'])]
     #[ORM\Column]
     private ?bool $active = true;
 
+    #[Groups(['main'])]
     #[Gedmo\Timestampable(on: 'create')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $created = null;
 
+    #[Groups(['main'])]
     #[Gedmo\Timestampable]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updated = null;

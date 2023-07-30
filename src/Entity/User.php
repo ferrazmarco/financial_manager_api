@@ -7,20 +7,24 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use App\Repository\UserRepository;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity('username', message: 'This username is already used.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
 
+    #[Groups(['main'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['main'])]
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 6)]
@@ -37,9 +41,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Length(min: 6)]
     private ?string $password = null;
 
+    #[Groups(['main'])]
     #[ORM\Column]
     private ?bool $admin = false;
 
+    #[Groups(['groups_details'])]
     #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: 'users')]
     private Collection $groups;
 

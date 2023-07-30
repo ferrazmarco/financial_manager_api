@@ -20,8 +20,11 @@ class UserController extends AbstractApiController
     {
         $this->denyAccessUnlessGranted(UserVoter::VIEW);
         return $this->json([
-            'data' => $userRepository->findAll()
-        ]);
+            'data' => $userRepository->findAll()],
+            JsonResponse::HTTP_OK,
+            [],
+            ['groups' => ['main', 'groups_details']]
+        );
     }
 
     #[Route('/users/{id}', name: 'app_user_show', methods: ['GET'])]
@@ -29,8 +32,11 @@ class UserController extends AbstractApiController
     public function show(User $user, UserRepository $userRepository): JsonResponse
     {   
         return $this->json([
-            'data' => $user
-        ]);
+            'data' => $user],
+            JsonResponse::HTTP_OK,
+            [],
+            ['groups' => ['main', 'groups_details']]
+        );
     }
 
     #[Route('/users/{id}', name: 'app_user_update', methods: ['PATCH', 'PUT'])]
@@ -50,8 +56,11 @@ class UserController extends AbstractApiController
 
         return $this->json([
             'message' => 'User updated successfully',
-            'data' => $user
-        ]);
+            'data' => $user],
+            JsonResponse::HTTP_OK,
+            [],
+            ['groups' => ['main', 'groups_details']]
+        );
     }
 
     #[Route('/users/{id}', name: 'app_user_destroy', methods: ['DELETE'])]
