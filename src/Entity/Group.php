@@ -22,7 +22,7 @@ class Group
     private ?string $description = null;
 
     #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'groups')]
-    private Collection $yes;
+    private Collection $users;
 
     #[ORM\Column]
     private ?bool $active = null;
@@ -37,7 +37,7 @@ class Group
 
     public function __construct()
     {
-        $this->yes = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -69,7 +69,7 @@ class Group
     {
         if (!$this->users->contains($user)) {
             $this->users->add($user);
-            $ye->addGroup($this);
+            $user->addGroup($this);
         }
 
         return $this;
