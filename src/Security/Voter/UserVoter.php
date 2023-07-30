@@ -45,7 +45,6 @@ class UserVoter extends Voter
 
     private function canShow(User $subject, User $currentUser): bool
     {   
-        return false;
         return ($currentUser === $subject || $currentUser->isAdmin());
     }
 
