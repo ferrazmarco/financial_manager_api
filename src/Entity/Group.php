@@ -25,14 +25,14 @@ class Group
     private Collection $users;
 
     #[ORM\Column]
-    private ?bool $active = null;
+    private ?bool $active = true;
 
     #[Gedmo\Timestampable(on: 'create')]
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $created = null;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     #[Gedmo\Timestampable]
+    #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updated = null;
 
     public function __construct()
@@ -96,24 +96,24 @@ class Group
         return $this;
     }
 
-    public function getCreated(): ?\DateTimeImmutable
+    public function getCreated(): ?\DateTime
     {
         return $this->created;
     }
 
-    public function setCreated(\DateTimeImmutable $created): static
+    public function setCreated(\DateTime $created): static
     {
         $this->created = $created;
 
         return $this;
     }
 
-    public function getUpdated(): ?\DateTimeImmutable
+    public function getUpdated(): ?\DateTime
     {
         return $this->updated;
     }
 
-    public function setUpdated(\DateTimeImmutable $updated): static
+    public function setUpdated(\DateTime $updated): static
     {
         $this->updated = $updated;
 

@@ -40,7 +40,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?bool $admin = false;
 
-    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: 'yes')]
+    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: 'users')]
     private Collection $groups;
 
     public function __construct()
