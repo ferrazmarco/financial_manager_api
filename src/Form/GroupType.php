@@ -2,11 +2,13 @@
 
 namespace App\Form;
 
+use App\Entity\User;
 use App\Entity\Group;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\{TextType, CollectionType, CheckboxType};
+use Symfony\Component\Form\Extension\Core\Type\{TextType, CheckboxType};
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class GroupType extends AbstractType
 {
@@ -15,8 +17,9 @@ class GroupType extends AbstractType
         $builder
             ->add('description', TextType::class)
             ->add('active', CheckboxType::class)
-            ->add('users', CollectionType::class, [
-                'entry_type' => User::class
+            ->add('users', EntityType::class, [
+                'class' => User::class,
+                'multiple' => true,
                 ]
             )
         ;

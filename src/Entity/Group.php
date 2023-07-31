@@ -27,7 +27,7 @@ class Group
     private ?string $description = null;
 
     #[Groups(['users_details'])]
-    #[ORM\ManyToMany(targetEntity: User::class, mappedBy: 'groups')]
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'groups')]
     private Collection $users;
 
     #[Groups(['main'])]

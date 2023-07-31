@@ -14,7 +14,7 @@ class GroupController extends AbstractApiController
 {
     #[Route('/groups', name: 'app_group', methods: ['GET'])]
     public function index(GroupRepository $groupRepository): JsonResponse
-    {
+    {   
         return $this->json([
             'data' => $groupRepository->findAll()], 
             JsonResponse::HTTP_OK, 

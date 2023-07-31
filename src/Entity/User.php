@@ -46,7 +46,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $admin = false;
 
     #[Groups(['groups_details'])]
-    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: 'users')]
+    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'users')]
     private Collection $groups;
 
     public function __construct()
@@ -146,16 +146,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function addGroup(Group $group): static
     {
-        if (!$this->groups->contains($group)) {
-            $this->groups->add($group);
-        }
+        $group->addUser($this);
 
         return $this;
     }
 
     public function removeGroup(Group $group): static
     {
-        $this->groups->removeElement($group);
+        $group->removeUser($this);
 
         return $this;
     }
