@@ -43,9 +43,13 @@ class Group
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updated = null;
 
+    #[ORM\OneToMany(mappedBy: 'group_', targetEntity: Expense::class, orphanRemoval: true)]
+    private Collection $expenses;
+
     public function __construct()
     {
         $this->users = new ArrayCollection();
+        $this->expenses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -124,6 +128,36 @@ class Group
     public function setUpdated(\DateTime $updated): static
     {
         $this->updated = $updated;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Expense>
+     */
+    public function getExpenses(): Collection
+    {
+        return $this->expenses;
+    }
+
+    public function addExpense(Expense $expense): static
+    {
+        if (!$this->expenses->contains($expense)) {
+            $this->expenses->add($expense);
+            $expense->setGroup($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExpense(Expense $expense): static
+    {
+        if ($this->expenses->removeElement($expense)) {
+            // set the owning side to null (unless already changed)
+            if ($expense->getGroup() === $this) {
+                $expense->setGroup(null);
+            }
+        }
 
         return $this;
     }
