@@ -92,11 +92,10 @@ class GroupController extends AbstractApiController
     public function create_expense(Group $group, ExpenseRepository $expenseRepository, Request $request): JsonResponse
     {
         $expense = new Expense;
+        $expense->setGroup($group);
+        $expense->setCreatedBy($this->getUser());
         $form = $this->createForm(ExpenseType::class, $expense);
         $this->processForm($request, $form);
-        $form->getData()->setCreatedBy($this->getUser());
-        $form->getData()->setGroup($group);
-
         $expenseRepository->add($expense, true);
 
         return $this->json(
@@ -106,9 +105,15 @@ class GroupController extends AbstractApiController
             ],
             JsonResponse::HTTP_CREATED,
             [],
-            [
-                'groups' => ['main', 'users_details']
-            ]
+            ['groups' => ['main', 'users_details']]
         );
+    }
+
+    #[Route('/groups/{id}/expenses', name: 'app_group_list_expenses', methods: ['GET'])]
+    public function list_expenses(Group $group): JsonResponse
+    {
+        return $this->json([
+            'data' => $group->getExpenses()
+        ],  JsonResponse::HTTP_OK, [], ['groups' => ['main']]);
     }
 }

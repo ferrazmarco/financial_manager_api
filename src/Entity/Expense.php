@@ -3,26 +3,32 @@
 namespace App\Entity;
 
 use App\Repository\ExpenseRepository;
-use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Serializer\Annotation\Ignore;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
+// TODO: Adicionar atributo sharedWith para determinar quais usuários do grupo vao compartilhar as despesas
 #[ORM\Entity(repositoryClass: ExpenseRepository::class)]
 class Expense
 {
+    #[Groups(['main'])]
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
+    #[Groups(['main'])]
     #[ORM\Column]
     private ?int $value = null;
 
+    #[Groups(['main'])]
     #[ORM\Column(length: 255)]
     private ?string $description = null;
 
+    #[Groups(['main'])]
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $createdBy = null;
@@ -31,6 +37,7 @@ class Expense
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $created = null;
 
+    #[Ignore]
     #[ORM\ManyToOne(inversedBy: 'expenses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Group $group_ = null;
@@ -40,14 +47,16 @@ class Expense
         return $this->id;
     }
 
-    public function getValue(): ?int
+    public function getValue(): ?float
     {
-        return $this->value;
+        return ($this->value / 100);
     }
 
-    public function setValue(int $value): static
+    // salvando o valor em centavos pra evitar 
+    // problemas de arrendondamento
+    public function setValue(float $value): static
     {
-        $this->value = $value;
+        $this->value = $value * 100;
 
         return $this;
     }
