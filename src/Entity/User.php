@@ -30,6 +30,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Length(min: 6)]
     private ?string $username = null;
 
+    #[Groups(['main'])]
     #[ORM\Column]
     private array $roles = [];
 
@@ -40,10 +41,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     #[Assert\Length(min: 6)]
     private ?string $password = null;
-
-    #[Groups(['main'])]
-    #[ORM\Column]
-    private ?bool $admin = false;
 
     #[Groups(['groups_details'])]
     #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'users')]
@@ -115,18 +112,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function isAdmin(): ?bool
-    {
-        return $this->admin;
-    }
-
-    public function setAdmin(bool $admin): static
-    {
-        $this->admin = $admin;
-
-        return $this;
-    }
-
     /**
      * @see UserInterface
      */
@@ -156,5 +141,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $group->removeUser($this);
 
         return $this;
+    }
+
+    public function isAdmin(): bool
+    {
+        return in_array('ROLE_ADMIN', $this->getRoles());
     }
 }

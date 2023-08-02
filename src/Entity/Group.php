@@ -11,7 +11,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-#[UniqueEntity('description', message: 'This description is already used.')]
 #[ORM\Entity(repositoryClass: GroupRepository::class)]
 #[ORM\Table(name: '`group`')]
 class Group
@@ -31,7 +30,7 @@ class Group
     private Collection $users;
 
     #[Groups(['main'])]
-    #[ORM\Column]
+    #[ORM\Column(options: ["default" => true])]
     private ?bool $active = true;
 
     #[Groups(['main'])]

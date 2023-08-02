@@ -6,7 +6,7 @@ use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\{TextType, CheckboxType};
+use Symfony\Component\Form\Extension\Core\Type\{TextType, CheckboxType, CollectionType};
 
 
 class EditUserType extends AbstractType
@@ -16,7 +16,11 @@ class EditUserType extends AbstractType
         $builder
             ->add('username', TextType::class)
             ->add('password', TextType::class)
-            ->add('admin', CheckboxType::class);
+            ->add('admin', CheckboxType::class)
+            ->add('roles', CollectionType::class, [
+                'entry_type' => TextType::class,
+            ]
+        );
     }
 
     public function configureOptions(OptionsResolver $resolver): void
