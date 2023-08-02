@@ -17,12 +17,14 @@ class GroupType extends AbstractType
         $builder
             ->add('description', TextType::class)
             ->add('active', CheckboxType::class)
-            ->add('users', EntityType::class, [
-                'class' => User::class,
-                'multiple' => true,
+            ->add(
+                'users',
+                EntityType::class,
+                [
+                    'class' => User::class,
+                    'multiple' => true,
                 ]
-            )
-        ;
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver): void

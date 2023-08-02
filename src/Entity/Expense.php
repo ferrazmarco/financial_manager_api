@@ -67,7 +67,7 @@ class Expense
     /**
      * @return Collection<int, User>
      */
-    public function getCreatedBy(): Collection
+    public function getCreatedBy(): User
     {
         return $this->createdBy;
     }

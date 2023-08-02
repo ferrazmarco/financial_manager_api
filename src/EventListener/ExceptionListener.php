@@ -8,14 +8,14 @@ use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 class ExceptionListener
-{   
+{
     #[AsEventListener]
     public function onKernelException(ExceptionEvent $event): void
-    {   
+    {
         $exception = $event->getThrowable();
         $data = $this->sanitizeMessage($exception->getMessage());
         $response = new JsonResponse($data);
-        
+
         if ($exception instanceof HttpExceptionInterface) {
             $response->setStatusCode($exception->getStatusCode());
         } else {

@@ -14,8 +14,7 @@ class CreateUserType extends AbstractType
     {
         $builder
             ->add('username', TextType::class)
-            ->add('password', TextType::class)
-        ;
+            ->add('password', TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

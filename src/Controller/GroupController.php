@@ -6,19 +6,24 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use App\Repository\GroupRepository;
+use App\Repository\ExpenseRepository;
 use App\Entity\Group;
+use App\Entity\Expense;
 use App\Form\GroupType;
+use App\Form\ExpenseType;
 
 #[Route("/api", name: "api_")]
 class GroupController extends AbstractApiController
 {
     #[Route('/groups', name: 'app_group', methods: ['GET'])]
     public function index(GroupRepository $groupRepository): JsonResponse
-    {   
-        return $this->json([
-            'data' => $groupRepository->findAll()], 
-            JsonResponse::HTTP_OK, 
-            [], 
+    {
+        return $this->json(
+            [
+                'data' => $groupRepository->findAll()
+            ],
+            JsonResponse::HTTP_OK,
+            [],
             ['groups' => ['main', 'users_details']]
         );
     }
@@ -26,10 +31,12 @@ class GroupController extends AbstractApiController
     #[Route('/groups/{id}', name: 'app_group_show', methods: ['GET'])]
     public function show(Group $group): JsonResponse
     {
-        return $this->json([
-            'data' => $group],
-            JsonResponse::HTTP_OK, 
-            [], 
+        return $this->json(
+            [
+                'data' => $group
+            ],
+            JsonResponse::HTTP_OK,
+            [],
             ['groups' => ['main', 'users_details']]
         );
     }
@@ -43,10 +50,12 @@ class GroupController extends AbstractApiController
         $form->getData()->addUser($this->getUser());
         $groupRepository->add($group, true);
 
-        return $this->json([
-            'data' => $group],
-            JsonResponse::HTTP_CREATED, 
-            [], 
+        return $this->json(
+            [
+                'data' => $group
+            ],
+            JsonResponse::HTTP_CREATED,
+            [],
             ['groups' => ['main', 'users_details']]
         );
     }
@@ -58,11 +67,13 @@ class GroupController extends AbstractApiController
         $this->processForm($request, $form, false);
         $groupRepository->add($group, true);
 
-        return $this->json([
-            'message' => 'Group updated successfully',
-            'data' => $group],
+        return $this->json(
+            [
+                'message' => 'Group updated successfully',
+                'data' => $group
+            ],
             JsonResponse::HTTP_OK,
-            [], 
+            [],
             ['groups' => ['main', 'users_details']]
         );
     }
@@ -75,5 +86,29 @@ class GroupController extends AbstractApiController
         return $this->json([
             'message' => 'Group deleted successfully',
         ]);
+    }
+
+    #[Route('/groups/{id}/expenses', name: 'app_group_create_expense', methods: ['POST'])]
+    public function create_expense(Group $group, ExpenseRepository $expenseRepository, Request $request): JsonResponse
+    {
+        $expense = new Expense;
+        $form = $this->createForm(ExpenseType::class, $expense);
+        $this->processForm($request, $form);
+        $form->getData()->setCreatedBy($this->getUser());
+        $form->getData()->setGroup($group);
+
+        $expenseRepository->add($expense, true);
+
+        return $this->json(
+            [
+                'message' => 'Expense created successfully!',
+                'data' => $group
+            ],
+            JsonResponse::HTTP_CREATED,
+            [],
+            [
+                'groups' => ['main', 'users_details']
+            ]
+        );
     }
 }

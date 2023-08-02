@@ -17,10 +17,13 @@ class EditUserType extends AbstractType
             ->add('username', TextType::class)
             ->add('password', TextType::class)
             ->add('admin', CheckboxType::class)
-            ->add('roles', CollectionType::class, [
-                'entry_type' => TextType::class,
-            ]
-        );
+            ->add(
+                'roles',
+                CollectionType::class,
+                [
+                    'entry_type' => TextType::class,
+                ]
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver): void

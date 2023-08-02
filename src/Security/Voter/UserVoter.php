@@ -15,14 +15,14 @@ class UserVoter extends Voter
     public const DESTROY = 'destroy';
 
     protected function supports(string $attribute, mixed $subject): bool
-    {   
+    {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
         return in_array($attribute, [self::EDIT, self::VIEW, self::DESTROY, self::SHOW]);
     }
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
-    {   
+    {
         $currentUser = $token->getUser();
         // if the user is anonymous, do not grant access
         if (!$currentUser instanceof User) {
@@ -30,7 +30,7 @@ class UserVoter extends Voter
         }
 
         // ... (check conditions and return true to grant permission) ...
-        return match($attribute) {
+        return match ($attribute) {
             self::VIEW => $this->canView($subject, $currentUser),
             self::EDIT => $this->canEdit($subject, $currentUser),
             self::DESTROY => $this->canDestroy($subject, $currentUser),
@@ -39,12 +39,12 @@ class UserVoter extends Voter
     }
 
     private function canView(?User $subject, User $currentUser): bool
-    {   
+    {
         return $currentUser->isAdmin();
     }
 
     private function canShow(User $subject, User $currentUser): bool
-    {   
+    {
         return ($currentUser === $subject || $currentUser->isAdmin());
     }
 
