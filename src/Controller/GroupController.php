@@ -5,6 +5,7 @@ namespace App\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use App\Repository\GroupRepository;
 use App\Repository\ExpenseRepository;
 use App\Entity\Group;
@@ -15,20 +16,8 @@ use App\Form\ExpenseType;
 #[Route("/api", name: "api_")]
 class GroupController extends AbstractApiController
 {
-    #[Route('/groups', name: 'app_group', methods: ['GET'])]
-    public function index(GroupRepository $groupRepository): JsonResponse
-    {
-        return $this->json(
-            [
-                'data' => $groupRepository->findAll()
-            ],
-            JsonResponse::HTTP_OK,
-            [],
-            ['groups' => ['main', 'users_details']]
-        );
-    }
-
     #[Route('/groups/{id}', name: 'app_group_show', methods: ['GET'])]
+    #[IsGranted('', 'group')]
     public function show(Group $group): JsonResponse
     {
         return $this->json(
@@ -37,7 +26,7 @@ class GroupController extends AbstractApiController
             ],
             JsonResponse::HTTP_OK,
             [],
-            ['groups' => ['main', 'users_details']]
+            ['groups' => ['main', 'users_details', 'list_expenses']]
         );
     }
 
@@ -48,6 +37,7 @@ class GroupController extends AbstractApiController
         $form = $this->createForm(GroupType::class, $group);
         $this->processForm($request, $form);
         $form->getData()->addUser($this->getUser());
+        $form->getData()->setCreatedBy($this->getUser());
         $groupRepository->add($group, true);
 
         return $this->json(
@@ -61,6 +51,7 @@ class GroupController extends AbstractApiController
     }
 
     #[Route('/groups/{id}', name: 'app_group_update', methods: ['PUT', 'PATCH'])]
+    #[IsGranted('', 'group')]
     public function update(Group $group, GroupRepository $groupRepository, Request $request): JsonResponse
     {
         $form = $this->createForm(GroupType::class, $group);
@@ -79,7 +70,8 @@ class GroupController extends AbstractApiController
     }
 
     #[Route('/groups/{id}', name: 'app_group_destroy', methods: ['DELETE'])]
-    public function destroy(Group $group, GroupRepository $groupRepository, Request $request): JsonResponse
+    #[IsGranted('', 'group')]
+    public function destroy(Group $group, GroupRepository $groupRepository): JsonResponse
     {
         $groupRepository->remove($group, true);
 
@@ -95,7 +87,7 @@ class GroupController extends AbstractApiController
         $expense->setGroup($group);
         $form = $this->createForm(ExpenseType::class, $expense);
         $this->processForm($request, $form);
-        
+
         $expense->addSharedWith($this->getUser());
         $expense->setCreatedBy($this->getUser());
         $expenseRepository->add($expense, true);

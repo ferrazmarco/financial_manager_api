@@ -8,6 +8,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\{TextType, CheckboxType};
+use Symfony\Component\Form\ChoiceList\ChoiceList;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class GroupType extends AbstractType
@@ -23,6 +24,9 @@ class GroupType extends AbstractType
                 [
                     'class' => User::class,
                     'multiple' => true,
+                    'choice_value' => function (User $user): string {
+                        return $user ? $user->getUsername() : '';
+                    },
                 ]
             );
     }
