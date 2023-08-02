@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ExpenseRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Serializer\Annotation\Ignore;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -10,7 +11,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
-// TODO: Adicionar atributo sharedWith para determinar quais usuários do grupo vao compartilhar as despesas
 #[ORM\Entity(repositoryClass: ExpenseRepository::class)]
 class Expense
 {
@@ -41,6 +41,15 @@ class Expense
     #[ORM\ManyToOne(inversedBy: 'expenses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Group $group_ = null;
+
+    #[Groups(['main'])]
+    #[ORM\ManyToMany(targetEntity: User::class)]
+    private Collection $sharedWith;
+
+    public function __construct()
+    {
+        $this->sharedWith = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -73,9 +82,6 @@ class Expense
         return $this;
     }
 
-    /**
-     * @return Collection<int, User>
-     */
     public function getCreatedBy(): User
     {
         return $this->createdBy;
@@ -108,6 +114,30 @@ class Expense
     public function setGroup(?Group $group_): static
     {
         $this->group_ = $group_;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getSharedWith(): Collection
+    {
+        return $this->sharedWith;
+    }
+
+    public function addSharedWith(User $sharedWith): static
+    {
+        if (!$this->sharedWith->contains($sharedWith)) {
+            $this->sharedWith->add($sharedWith);
+        }
+
+        return $this;
+    }
+
+    public function removeSharedWith(User $sharedWith): static
+    {
+        $this->sharedWith->removeElement($sharedWith);
 
         return $this;
     }

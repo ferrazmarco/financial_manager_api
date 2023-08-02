@@ -93,9 +93,11 @@ class GroupController extends AbstractApiController
     {
         $expense = new Expense;
         $expense->setGroup($group);
-        $expense->setCreatedBy($this->getUser());
         $form = $this->createForm(ExpenseType::class, $expense);
         $this->processForm($request, $form);
+        
+        $expense->addSharedWith($this->getUser());
+        $expense->setCreatedBy($this->getUser());
         $expenseRepository->add($expense, true);
 
         return $this->json(

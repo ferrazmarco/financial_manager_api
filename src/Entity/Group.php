@@ -42,7 +42,7 @@ class Group
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $updated = null;
 
-    #[Groups(['list_expenses'])]
+    #[Groups(['main'])]
     #[ORM\OneToMany(mappedBy: 'group_', targetEntity: Expense::class, orphanRemoval: true)]
     private Collection $expenses;
 
