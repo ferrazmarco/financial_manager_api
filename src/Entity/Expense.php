@@ -62,7 +62,7 @@ class Expense
     }
 
     // salvando o valor em centavos pra evitar 
-    // problemas de arrendondamento
+    // problemas de arredondamento
     public function setValue(float $value): static
     {
         $this->value = $value * 100;
